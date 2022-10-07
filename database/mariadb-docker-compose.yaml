@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+  mariadb-imv-backend-live:
+    image: mariadb:10.5.7
+    restart: always
+    container_name: mariadb-imv-backend-live
+    ports:
+      - 7101:3306
+    volumes:
+      - "imv-dms-database-live:/data/db/imv"
+    environment:
+      - MYSQL_ROOT_PASSWORD=Juve@12345
+      - TZ=Asia/Ho_Chi_Minh
+    networks:
+      - dms-network
+volumes:
+  imv-dms-database-live:
+    driver: local
+networks:
+  dms-network:
+    external: true
+    driver: bridge

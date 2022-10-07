@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+  redis-imv-backend-live:
+    image: redis:latest
+    restart: always
+    container_name: redis-imv-backend-live
+    ports:
+      - 7102:6379
+    volumes:
+      - "imv-dms-redisdb-live:/data/db/redis-imv"
+    environment:
+      - MYSQL_ROOT_PASSWORD=Juve@12345
+      - TZ=Asia/Ho_Chi_Minh
+    networks:
+      - dms-network
+volumes:
+  imv-dms-redisdb-live:
+    driver: local
+networks:
+  dms-network:
+    external: true
+    driver: bridge

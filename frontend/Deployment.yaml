@@ -1,0 +1,80 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imv-dev-frontend-service
+  namespace: imv-dev
+spec:
+  selector:
+    matchLabels:
+      run: imv-dev-frontend-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: imv-dev-frontend-service
+      annotations:
+        consul.sendo.vn/inject: "false"
+        configmap.reloader.stakater.com/reload: "imv-frontend-config"
+    spec:
+      volumes:
+      #- name: imv-frontend-config-volume
+      #  configMap:
+      #    name: imv-frontend-config
+      - name: file-store
+        persistentVolumeClaim:
+          claimName: imv-nfs-master2
+          readOnly: false
+      containers:
+        - name: imv-dev-frontend-service
+          image: registry.1retail-dev.asia/imv-dev/imv-dev-frontend-service:BUILD_NUMBER
+          imagePullPolicy: Always
+          env:
+            - name: TZ
+              value: Asia/Ho_Chi_Minh
+          ports:
+            - containerPort: 80
+          volumeMounts:
+          #  - name: imv-frontend-config-volume
+          #    mountPath: /app/config
+            - name: file-store
+              mountPath: /usr/share/nginx/html/imgs/imv
+          resources:
+            limits:
+              cpu: '0.4'
+              memory: 1024Mi
+            requests:
+              cpu: '0.2'
+              memory: 512Mi
+
+          readinessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 5
+            timeoutSeconds: 3
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/bash", "-c", "sleep 15"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: imv-dev-frontend-service
+  namespace: imv-dev
+  labels:
+    tier: golang_mod
+    run: imv-dev-frontend-service
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: imv-dev-frontend-service-http
+
+  selector:
+    run: imv-dev-frontend-service
+
