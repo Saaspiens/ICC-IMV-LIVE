@@ -1,6 +1,6 @@
 def dev_repo_imv = "https://github.com/Saaspiens/merchandising-plarform.git"
-def devops_project = "https://github.com/Saaspiens/ICC-IMV-DEV.git"
-def namespace = "imv-dev"
+def devops_project = "https://github.com/Saaspiens/ICC-IMV-LIVE.git"
+def namespace = "imv-live"
 properties([
         parameters([
                 string(defaultValue: 'Merchandising', name: 'TAG'),
@@ -28,7 +28,7 @@ pipeline {
   environment {
     registry = "https://registry-1.docker.io/v2/"
     registryCredential = 'dockerhub'
-    imageId = "registry.1retail-dev.asia/imv-dev/imv-dev-${params.Service}-service:$BUILD_NUMBER"
+    imageId = "registry.1retail-dev.asia/imv-live/imv-live-${params.Service}-service:$BUILD_NUMBER"
     docker_registry = 'https://registry.1retail-dev.asia'
     docker_creds = credentials('harbor')
   }
@@ -92,7 +92,7 @@ pipeline {
               }
               timeout(time: 3000, unit: 'SECONDS') {
                 echo "===================== WAITING UNTIL SERVICE LISTEN PORT SUCCESS  ====================="
-                sh  "kubectl rollout status deployment imv-dev-${params.Service}-service -n $namespace"
+                sh  "kubectl rollout status deployment imv-live-${params.Service}-service -n $namespace"
               }
           }
     }
@@ -110,19 +110,19 @@ pipeline {
         failure {
                 echo 'failed'
                 wrap([$class: 'BuildUser']) {
-                    sendTelegram("ON-IMV-DEV | <i>${params.Service}</i> | ${JOB_NAME} | TAG ${params.TAG} | <b>FAILED</b> by ${BUILD_USER} | ${BUILD_URL}")
+                    sendTelegram("ON-IMV-LIVE | <i>${params.Service}</i> | ${JOB_NAME} | TAG ${params.TAG} | <b>FAILED</b> by ${BUILD_USER} | ${BUILD_URL}")
                 }
         }
         aborted {
                 echo 'aborted'
                 wrap([$class: 'BuildUser']) {
-                    sendTelegram("ON-IMV-DEV | <i>${params.Service}</i> | ${JOB_NAME} | TAG ${params.TAG} | <b>ABORTED OR TIMEOUT</b> by ${BUILD_USER} | ${BUILD_URL}")
+                    sendTelegram("ON-IMV-LIVE | <i>${params.Service}</i> | ${JOB_NAME} | TAG ${params.TAG} | <b>ABORTED OR TIMEOUT</b> by ${BUILD_USER} | ${BUILD_URL}")
                 }
         }
         success {
                 echo 'success'
                 wrap([$class: 'BuildUser']) {
-                    sendTelegram("ON-IMV-DEV | <i>${params.Service}</i> | ${JOB_NAME} | TAG ${params.TAG} | <b>SUCCESS</b> by ${BUILD_USER} | ${BUILD_URL}")
+                    sendTelegram("ON-IMV-LIVE | <i>${params.Service}</i> | ${JOB_NAME} | TAG ${params.TAG} | <b>SUCCESS</b> by ${BUILD_USER} | ${BUILD_URL}")
                 }
         }
   }
