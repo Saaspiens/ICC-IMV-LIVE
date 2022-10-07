@@ -12,7 +12,7 @@ services:
     networks:
       - dms-network
     volumes:
-      - -imv-dms-mongodb-live:/data/db/mongodb-imv-live
+      - imv-dms-mongodb-live:/data/db/mongodb-imv-live
   mongo-imv-backend-live-express:
     image: mongo-express
     container_name: mexpress-imv-backend-live
