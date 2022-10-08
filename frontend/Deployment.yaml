@@ -2,17 +2,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: imv-dev-frontend-service
+  name: imv-live-frontend-service
   namespace: imv-live
 spec:
   selector:
     matchLabels:
-      run: imv-dev-frontend-service
+      run: imv-live-frontend-service
   replicas: 1
   template:
     metadata:
       labels:
-        run: imv-dev-frontend-service
+        run: imv-live-frontend-service
       annotations:
         consul.sendo.vn/inject: "false"
         configmap.reloader.stakater.com/reload: "imv-frontend-config"
@@ -26,8 +26,8 @@ spec:
           claimName: imv-live-nfs-master2
           readOnly: false
       containers:
-        - name: imv-dev-frontend-service
-          image: registry.1retail-dev.asia/imv-dev/imv-dev-frontend-service:BUILD_NUMBER
+        - name: imv-live-frontend-service
+          image: registry.1retail-dev.asia/imv-live/imv-live-frontend-service:BUILD_NUMBER
           imagePullPolicy: Always
           env:
             - name: TZ
@@ -63,18 +63,18 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: imv-dev-frontend-service
-  namespace: imv-dev
+  name: imv-live-frontend-service
+  namespace: imv-live
   labels:
     tier: golang_mod
-    run: imv-dev-frontend-service
+    run: imv-live-frontend-service
 spec:
   ports:
     - port: 80
       targetPort: 80
       protocol: TCP
-      name: imv-dev-frontend-service-http
+      name: imv-live-frontend-service-http
 
   selector:
-    run: imv-dev-frontend-service
+    run: imv-live-frontend-service
 
