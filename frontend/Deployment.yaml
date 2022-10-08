@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: imv-dev-frontend-service
-  namespace: imv-dev
+  namespace: imv-live
 spec:
   selector:
     matchLabels:
